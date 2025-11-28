@@ -1,0 +1,132 @@
+projek-analisis-sentimen-fenomena-vibecoding/
+│
+├── 📂 app/
+│   └── app.py                              # ⭐ Streamlit main application
+│
+├── 📂 models/
+│   ├── 📂 fineTuneIndobert/               # Hyperparameter tuning results
+│   │   ├── oversample_only_e3_lr2e-05_tar250_ml256/
+│   │   ├── oversample_only_e4_lr2e-05_tar250_ml256/  ⭐ BEST (F1=0.5873)
+│   │   ├── oversample_only_e3_lr3e-05_tar250_ml256/
+│   │   ├── oversample_only_e4_lr3e-05_tar250_ml256/
+│   │   ├── oversample_only_e3_lr2e-05_tar300_ml256/
+│   │   └── oversample_only_e3_lr2e-05_tar250_ml128/
+│   │
+│   ├── 📂 experimentsIndobert/            # Baseline strategy comparison
+│   │   ├── baseline/
+│   │   ├── class_weight_only/
+│   │   ├── oversample_only/
+│   │   └── oversample_and_weight/
+│   │
+│   └── 📂 indobert_sentiment/             # Initial model reference
+│
+├── 📂 data/
+│   ├── vibe_coding_auditLabel.csv          ⭐ Main labeled dataset (879 rows)
+│   ├── vibe_coding_dataset_ready.csv
+│   ├── vibe_coding_yt_comments.csv
+│   ├── vibe_coding_yt_comments_clean.csv
+│   ├── vibe_coding_pseudoLabel.csv
+│   └── __pycache__/
+│
+├── 📂 notebooks/
+│   ├── TrainBERT.ipynb                    ⭐ Main training notebook
+│   └── eda.ipynb                          # Exploratory Data Analysis
+│
+├── 📂 src/
+│   ├── Sanitizer.py                       # Text cleaning utility
+│   └── Scrape.py                          # YouTube scraper
+│
+├── 📂 dev/
+│   ├── AutoLabelSentiment.py               # Auto-labeling (Groq API)
+│   ├── Detokenization.py
+│   ├── diagnoseRateLimitIssue.py
+│   ├── GroqKeyManager.py                   # API key rotation
+│   ├── groqRateLimitCheck.py
+│   ├── testApiRotation.py
+│   ├── testGroqKeys.py
+│   └── __pycache__/
+│
+├── 📂 config/
+│   ├── setting.py                          # Global configuration
+│   └── __pycache__/
+│
+├── 📂 docs/
+│   ├── API_KEY_ROTATION.md
+│   ├── label_sentiment_guidelines.md
+│   ├── RATE_LIMIT_DEBUG.md
+│   └── TRAINING_GUIDE.md
+│
+├── 📂 envs/                                # Virtual environments (git-ignored)
+│
+├── 📂 .vscode/                             # VS Code settings
+│
+├── 📂 .git/                                # Git repository
+│
+├── 📂 .gitignore                           # Git ignore rules
+│
+├── 📂 .ipynb_checkpoints/                  # Jupyter auto-save
+│
+├── 📄 README.md                            ⭐ Project overview & quick start
+│
+├── 📄 PROJECT_STRUCTURE.md                 ⭐ Detailed documentation (THIS IS THE MAIN GUIDE)
+│
+├── 📄 FOLDER_TREE.txt                      # This file - Visual tree structure
+│
+├── 📄 requirements.txt                     # Python dependencies
+│
+├── 📄 code_pre-Modelling.ipynb             # Pre-processing notebook
+│
+├── 📄 code_scrapping_vibe_coding.ipynb     # Scraping notebook
+│
+├── 📄 data-analisis-sentimen-terhadap-fenomena-vibecoding.csv
+│
+├── 📄 data-analisis-sentimen-terhadap-fenomena-vibecoding.xlsx
+│
+├── 📄 data_after_premodelling.csv
+│
+├── 📄 data_after_premodelling.xlsx
+│
+└── [Other files as per git tracking]
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY FILES LEGEND:
+================
+⭐ = Important / Recommended to use first
+📂 = Folder / Directory
+📄 = File
+📓 = Jupyter Notebook
+📊 = Data/Dataset
+🤖 = Model
+🔧 = Utility/Tool
+
+
+QUICK NAVIGATION:
+=================
+
+1. START HERE:
+   └── README.md (quick start guide)
+   └── PROJECT_STRUCTURE.md (detailed documentation)
+
+2. RUN APP:
+   └── app/app.py (streamlit run app/app.py)
+
+3. TRAIN MODEL:
+   └── notebooks/TrainBERT.ipynb (main training)
+
+4. USE BEST MODEL:
+   └── models/fineTuneIndobert/oversample_only_e4_lr2e-05_tar250_ml256/
+
+5. DATA:
+   └── data/vibe_coding_auditLabel.csv (main dataset)
+
+6. DOCUMENTATION:
+   └── docs/TRAINING_GUIDE.md (how to train)
+   └── docs/API_KEY_ROTATION.md (API management)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+Last Updated: November 28, 2025
+Status: ✅ Production Ready
+Branch: Dev/deskruturisasi
