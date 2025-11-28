@@ -1,0 +1,101 @@
+# ============================================================================
+# Analisis Sentimen - Fenomena Vibecoding
+# Dependencies untuk project machine learning dengan IndoBERT
+# ============================================================================
+#
+# PENTING: PyTorch harus di-install terlebih dahulu dengan custom URL
+# sesuai device Anda (CPU/CUDA). Lihat instruksi di bawah.
+#
+# ============================================================================
+# INSTALASI STEP-BY-STEP
+# ============================================================================
+#
+# 1. CREATE VIRTUAL ENVIRONMENT
+#    python -m venv venv
+#    venv\Scripts\activate          # Windows
+#    source venv/bin/activate       # Linux/Mac
+#
+# 2. INSTALL PYTORCH (PILIH SALAH SATU)
+#
+#    a) CPU-ONLY (Recommended untuk development)
+#       pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+#
+#    b) CUDA 12.1 (RTX 4000-4090, H100, etc)
+#       pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+#
+#    c) CUDA 11.8 (RTX 3000-3090, A100, etc)
+#       pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#
+#    d) ROCm 5.7 (AMD GPU)
+#       pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.7
+#
+#    Atau gunakan PyTorch selector: https://pytorch.org/get-started/locally/
+#
+# 3. INSTALL DEPENDENCIES DARI FILE INI
+#    pip install -r requirements.txt
+#
+# ============================================================================
+# CORE ML DEPENDENCIES
+# ============================================================================
+
+# Transformers & Model Hub
+transformers>=4.34.0        # HuggingFace Transformers (IndoBERT, tokenization, training)
+datasets>=2.14.0            # HuggingFace Datasets (dataset loading & processing)
+safetensors>=0.4.0          # Safe model serialization (faster & safer than pickle)
+tokenizers>=0.14.0          # Fast tokenizer implementation
+
+# Data Processing & Scientific Computing
+pandas>=2.0.0               # Data manipulation & analysis
+numpy>=1.24.0               # Numerical computing
+scipy>=1.11.0               # Scientific computing utilities
+
+# Machine Learning & Metrics
+scikit-learn>=1.3.0         # ML metrics, train/test split, preprocessing
+transformers[torch]>=4.34.0 # Include torch dependency
+
+# ============================================================================
+# UI & DEPLOYMENT
+# ============================================================================
+
+streamlit>=1.28.0           # Interactive web app framework
+streamlit-option-menu>=0.3.0 # Sidebar navigation menu (optional, for better UI)
+
+# ============================================================================
+# DEVELOPMENT & ANALYSIS
+# ============================================================================
+
+jupyter>=1.0.0              # Jupyter notebook server
+notebook>=7.0.0             # Classic Jupyter notebook
+ipython>=8.15.0             # Interactive Python shell
+matplotlib>=3.8.0           # Plotting & visualization
+seaborn>=0.13.0             # Statistical data visualization (optional)
+
+# ============================================================================
+# OPTIONAL: FOR ADVANCED FEATURES
+# ============================================================================
+
+# Uncomment jika menggunakan API-based auto-labeling
+# groq>=0.4.0                 # Groq API client (untuk AutoLabelSentiment.py)
+
+# Uncomment untuk interpretability
+# lime>=0.2.0                 # Local interpretable model-agnostic explanations
+# shap>=0.43.0                # SHAP values for feature importance
+
+# Uncomment untuk advanced visualization
+# plotly>=5.17.0              # Interactive plotting
+
+# ============================================================================
+# NOTES
+# ============================================================================
+#
+# - Versi package di-pin untuk ensure reproducibility & stability
+# - PyTorch TIDAK termasuk dalam file ini (install terpisah dengan custom URL)
+# - Untuk production, pertimbangkan menggunakan fixed versions:
+#   pip freeze > requirements-lock.txt
+#
+# - Troubleshooting:
+#   * "ImportError: No module named 'torch'" → Install PyTorch dulu (step 2)
+#   * "CUDA out of memory" → Gunakan CPU-only version atau reduce batch size
+#   * Slow import → Consider using `torch.utils.checkpoint` untuk gradient checkpointing
+#
+# ============================================================================
