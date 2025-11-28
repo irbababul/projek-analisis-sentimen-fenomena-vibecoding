@@ -503,17 +503,15 @@ Untuk pertanyaan, buka GitHub issue atau hubungi tim developers.
 
 1. **Rayhan Ananda Resky** (@RayhanLup1n)
 
-   - Lead Developer, ML Engineer
    - Model architecture & training
 
 2. **Muhammad Irbabul Salas**
 
-   - Data annotation & labeling
-   - Analysis & documentation
+   - Data scraping
+   - Data Cleaning
 
 3. **Muhammad Sawaludin**
-   - Frontend & UI development
-   - Data scraping
+   - Data annotation & labeling
 
 ---
 
