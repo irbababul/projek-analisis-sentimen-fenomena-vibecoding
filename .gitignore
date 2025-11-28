@@ -1,52 +1,23 @@
-###############################################################################
-# GENERAL FILES / OS ARTIFACTS
-###############################################################################
+# Ignore files
 .DS_Store
-Thumbs.db
 __pycache__/
+*.pyc
+
+# Ignore environment
+envs/
+
+# Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
+
+# Igore VSCode settings
 .vscode/
 
-###############################################################################
-# PYTHON ENVIRONMENTS
-###############################################################################
-env/
-envs/
-.venv/
-venv/
+# Ignore specific notebooks
+hf.ipynb
 
-###############################################################################
-# LARGE MODEL DIRECTORY (DO NOT TRACK MODELS IN GIT)
-# Prevents accidental uploading of huge files such as:
-# - model.safetensors
-# - pytorch_model.bin
-# - optimizer.pt
-# - training_args.bin
-# - checkpoints/
-###############################################################################
+# Ignore model outputs
 models/
 
-# If you want exceptions (misal: menyimpan file config kecil):
-# !models/.keep
-# !models/**/config.json
-# !models/**/tokenizer.json
-# !models/**/vocab.txt
-
-###############################################################################
-# PYTORCH / TRANSFORMERS ARTIFACTS
-###############################################################################
-*.pt
 *.bin
-*.safetensors
-
-###############################################################################
-# EDITOR & TOOLING
-###############################################################################
-*.log
-*.tmp
-
-###############################################################################
-# DEVELOPMENT SCRIPTS (opsional untuk di-ignore)
-# Uncomment jika tidak mau ikut ke repo.
-###############################################################################
-# dev/
+*.pt
+*.ckpt

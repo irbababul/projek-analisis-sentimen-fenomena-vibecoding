@@ -36,11 +36,7 @@ except ImportError:
 DEFAULT_DATA_PATH = DATA_DIR / "vibe_coding_auditLabel.csv"
 
 # Model utama (hasil fine-tuning terbaik)
-FINE_TUNED_MODEL_DIR = (
-    MODEL_DIR
-    / "fineTuneIndobert"
-    / "oversample_only_e4_lr2e-05_tar250_ml256"
-)
+FINE_TUNED_MODEL_DIR = "RayhanLup1n/vibecoding-indobert-sentiment"
 
 # ======================================================================
 # Fungsi utilitas
@@ -56,17 +52,31 @@ def load_dataset(path: Path) -> pd.DataFrame:
 
 
 @st.cache_resource
-def load_model_tokenizer(path: Path):
+def load_model_tokenizer(model_id):
     """
-    Memuat tokenizer dan model dari direktori tertentu.
-    Jika gagal, mengembalikan (None, error_message).
+    Memuat tokenizer dan model dari HuggingFace atau direktori lokal.
+    
+    Args:
+        model_id: String ID model HuggingFace atau Path lokal
+        
+    Returns:
+        (tokenizer, model) atau (None, error_message) jika gagal
     """
     try:
-        tokenizer = AutoTokenizer.from_pretrained(str(path))
-        model = AutoModelForSequenceClassification.from_pretrained(str(path))
+        model_id_str = str(model_id)
+        tokenizer = AutoTokenizer.from_pretrained(model_id_str)
+        model = AutoModelForSequenceClassification.from_pretrained(model_id_str)
         return tokenizer, model
+        
+    except FileNotFoundError:
+        error_msg = (
+            f"❌ Model tidak ditemukan: {model_id}\n\n"
+            f"Pastikan Anda memiliki akses ke HuggingFace atau model tersedia secara lokal.")
+        return None, error_msg
+        
     except Exception as e:
-        return None, str(e)
+        error_msg = f"❌ Error memuat model: {str(e)}"
+        return None, error_msg
 
 # ======================================================================
 # Styling CSS
@@ -269,65 +279,146 @@ def show_stats(df):
 # ======================================================================
 
 def show_prediction():
-    st.markdown("<div class='header-style'><h2>Prediksi Sentimen Teks</h2></div>", unsafe_allow_html=True)
-    st.write("Masukkan teks komentar untuk memprediksi sentimennya menggunakan model IndoBERT.")
+    st.markdown("<div class='header-style'><h2>🔍 Prediksi Sentimen Teks</h2></div>", unsafe_allow_html=True)
+    st.write("Masukkan teks komentar untuk memprediksi sentimennya menggunakan model IndoBERT yang telah di-fine-tune.")
+    
+    st.markdown("---")
+    
+    # Info model
+    col_info1, col_info2 = st.columns(2)
+    with col_info1:
+        st.markdown("<div class='subheader-style'><h4>Model Information</h4></div>", unsafe_allow_html=True)
+        st.write(f"📍 Model: `{FINE_TUNED_MODEL_DIR}`")
+        st.write(f"🔧 Device: **{'GPU (CUDA)' if torch.cuda.is_available() else 'CPU'}**")
+    with col_info2:
+        st.markdown("<div class='subheader-style'><h4>Configuration</h4></div>", unsafe_allow_html=True)
+        st.write("- Epochs: 4")
+        st.write("- Learning Rate: 2e-5")
+        st.write("- Max Length: 256 tokens")
+        st.write("- F1-macro: 0.5873")
+    
+    st.markdown("---")
 
-    st.write(f"Model yang digunakan: {FINE_TUNED_MODEL_DIR}")
+    # Input teks
+    st.markdown("<div class='subheader-style'><h4>Masukkan Teks Komentar</h4></div>", unsafe_allow_html=True)
+    user_text = st.text_area(
+        "Teks komentar:",
+        height=150,
+        placeholder="Contoh: Vibecoding itu keren banget! atau Biasa aja sih..."
+    )
 
-    if not FINE_TUNED_MODEL_DIR.exists():
-        st.error("Folder model tidak ditemukan. Pastikan model telah ditempatkan pada direktori yang benar.")
-        return
-
-    user_text = st.text_area("Teks komentar", height=150)
-
-    if st.button("Analisis Sentimen", use_container_width=True):
+    # Tombol prediksi
+    if st.button("🚀 Analisis Sentimen", use_container_width=True, type="primary"):
         if not user_text.strip():
-            st.warning("Masukkan teks terlebih dahulu.")
+            st.warning("⚠️ Masukkan teks terlebih dahulu.")
             return
 
-        tokenizer, model_or_error = load_model_tokenizer(FINE_TUNED_MODEL_DIR)
+        # Load model
+        with st.spinner("📥 Memuat model dari HuggingFace..."):
+            tokenizer, result = load_model_tokenizer(FINE_TUNED_MODEL_DIR)
 
-        if tokenizer is None:
-            st.error(f"Gagal memuat model: {model_or_error}")
-            return
+            if tokenizer is None:
+                st.error(result)  # result adalah error message dengan format CLI
+                st.info(
+                    "💡 **Solusi:**\n\n"
+                    "- Pastikan koneksi internet aktif (untuk download dari HuggingFace)\n"
+                    "- Periksa akses HuggingFace: https://huggingface.co/RayhanLup1n/vibecoding-indobert-sentiment\n"
+                    "- Jika offline, gunakan model lokal dari `models/fineTuneIndobert/oversample_only_e4_lr2e-05_tar250_ml256/`"
+                )
+                return
 
-        model = model_or_error
+            model = result
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model.to(device)
-        model.eval()
+        # Inference
+        try:
+            with st.spinner("⚙️ Melakukan prediksi..."):
+                device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                model.to(device)
+                model.eval()
 
-        enc = tokenizer(
-            user_text,
-            truncation=True,
-            padding=True,
-            max_length=256,
-            return_tensors="pt",
-        )
-        enc = {k: v.to(device) for k, v in enc.items()}
+                enc = tokenizer(
+                    user_text,
+                    truncation=True,
+                    padding=True,
+                    max_length=256,
+                    return_tensors="pt",
+                )
+                enc = {k: v.to(device) for k, v in enc.items()}
 
-        with torch.no_grad():
-            outputs = model(**enc)
-            logits = outputs.logits
-            probs = F.softmax(logits, dim=1).cpu().numpy()[0]
-            pred_idx = np.argmax(probs)
-            confidence = probs[pred_idx]
+                with torch.no_grad():
+                    outputs = model(**enc)
+                    logits = outputs.logits
+                    probs = F.softmax(logits, dim=1).cpu().numpy()[0]
+                    pred_idx = int(np.argmax(probs))
+                    confidence = float(probs[pred_idx])
 
-        label_map = {0: "Negatif", 1: "Netral", 2: "Positif"}
-        pred_label = label_map.get(pred_idx, "Tidak diketahui")
+            # Label mapping
+            label_map = {0: "Negatif", 1: "Netral", 2: "Positif"}
+            emoji_map = {0: "😞", 1: "😐", 2: "😊"}
+            pred_label = label_map.get(pred_idx, "Tidak diketahui")
+            emoji = emoji_map.get(pred_idx, "❓")
 
-        col1, col2 = st.columns([2, 3])
+            # Display results
+            st.success("✅ Analisis selesai!")
+            st.markdown("---")
+            
+            st.markdown("<div class='header-style'><h3>📊 Hasil Prediksi</h3></div>", unsafe_allow_html=True)
 
-        with col1:
-            st.metric("Prediksi Sentimen", pred_label)
-            st.metric("Confidence", f"{confidence*100:.1f}%")
-            st.caption(f"Menggunakan perangkat: {'GPU' if torch.cuda.is_available() else 'CPU'}")
+            # Metrics
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("🎯 Prediksi Sentimen", f"{emoji} {pred_label}")
+            with col2:
+                st.metric("📈 Confidence", f"{confidence*100:.1f}%")
+            with col3:
+                confidence_level = "Tinggi" if confidence > 0.7 else "Sedang" if confidence > 0.5 else "Rendah"
+                st.metric("⚡ Kepercayaan", confidence_level)
 
-        with col2:
-            df_prob = pd.DataFrame(
-                {"Sentimen": [label_map[i] for i in range(len(probs))], "Probabilitas": probs}
-            ).set_index("Sentimen")
-            st.bar_chart(df_prob)
+            # Probability distribution
+            st.markdown("<div class='subheader-style'><h4>Distribusi Probabilitas</h4></div>", unsafe_allow_html=True)
+            col_chart1, col_chart2 = st.columns([2, 1])
+            
+            with col_chart1:
+                df_prob = pd.DataFrame(
+                    {"Sentimen": [label_map[i] for i in range(len(probs))], "Probabilitas": probs}
+                ).set_index("Sentimen")
+                st.bar_chart(df_prob)
+            
+            with col_chart2:
+                st.write("Nilai Probabilitas:")
+                for i, prob in enumerate(probs):
+                    st.write(f"- {label_map[i]}: {prob:.4f}")
+
+            # Keyword explanation
+            st.markdown("<div class='subheader-style'><h4>🔑 Penjelasan Keyword</h4></div>", unsafe_allow_html=True)
+            keywords = {
+                "Positif": ["bagus", "keren", "suka", "mantap", "terbaik", "love", "awesome"],
+                "Netral": ["oke", "lumayan", "biasa", "standar", "ok"],
+                "Negatif": ["buruk", "jelek", "mengecewakan", "benci", "parah", "boring"],
+            }
+            
+            text_lower = user_text.lower()
+            keyword_found = False
+            
+            for sentiment, kw_list in keywords.items():
+                matched = [kw for kw in kw_list if kw in text_lower]
+                if matched:
+                    st.write(f"✓ **{sentiment}**: ditemukan keyword → {', '.join(matched)}")
+                    keyword_found = True
+            
+            if not keyword_found:
+                st.info("ℹ️ Tidak ada keyword sentimen yang terdeteksi. Model memprediksi berdasarkan konteks teks.")
+
+            # Tokenization preview
+            st.markdown("<div class='subheader-style'><h4>🔤 Token Preview</h4></div>", unsafe_allow_html=True)
+            tokens = tokenizer.tokenize(user_text)
+            st.write(f"Total tokens: {len(tokens)}")
+            st.write("Token list (first 30):")
+            st.write(tokens[:30])
+
+        except Exception as e:
+            st.error(f"❌ Error selama prediksi: {str(e)}")
+            st.info("💡 Coba refresh halaman atau periksa input teks Anda.")
 
 # ======================================================================
 # Menu Tentang
